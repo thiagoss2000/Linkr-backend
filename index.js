@@ -1,7 +1,7 @@
 import express, { json } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import helloWorld from "./routers/helloAPI.js";
+import helloWorld from "./scr/routers/helloAPI.js";
 
 dotenv.config();
 const app = express();
