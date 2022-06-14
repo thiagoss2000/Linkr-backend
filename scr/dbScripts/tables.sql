@@ -1,8 +1,9 @@
 CREATE TABLE "users" (
 	"id" serial PRIMARY KEY,
-	"name" TEXT NOT NULL ,
+	"username" TEXT NOT NULL ,
 	"email" TEXT NOT NULL UNIQUE,
 	"password" TEXT NOT NULL,
+    "pictureUrl" TEXT NOT NULL,
     "createdAt" TIMESTAMP WITH TIME ZONE default NOW()
 );
 
