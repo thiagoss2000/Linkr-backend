@@ -1,6 +1,6 @@
 CREATE TABLE "users" (
 	"id" serial PRIMARY KEY,
-	"username" TEXT NOT NULL ,
+	"username" TEXT NOT NULL UNIQUE,
 	"email" TEXT NOT NULL UNIQUE,
 	"password" TEXT NOT NULL,
     "pictureUrl" TEXT NOT NULL,
