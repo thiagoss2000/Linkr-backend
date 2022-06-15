@@ -16,5 +16,5 @@ app.use(helloWorld);
 app.use(authRouter);
 
 app.listen(process.env.PORT, () => {
-  console.log(chalk.blue("Server running on port 4000"));
+  console.log(chalk.blue("Server running on port " + process.env.PORT));
 });

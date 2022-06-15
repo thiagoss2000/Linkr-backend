@@ -3,7 +3,7 @@ import { newUser } from "../repositories/auth\Repository.js";
 import bcrypt from "bcrypt";
 
 export async function signUp(req, res) {
-    const { email, password, username, urlpicture} = req.body;
+    const { email, password, confirmPassword, username, urlpicture} = req.body;
     const hashPassword= bcrypt.hashSync(password,10);
     try{
        await newUser(username, email, hashPassword, urlpicture);
