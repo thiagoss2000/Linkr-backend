@@ -42,12 +42,12 @@ export async function login (req,res){
  
          const data = {id: verifyUser.rows[0].id, name: verifyUser.rows[0].name}
  
-         const config = { expiresIn: 60*60*24*3} 
+         const config = { expiresIn: "1h" };
          const token= jwt.sign(data ,process.env.ENCRYPTPASSWORD, config);
  
          await insertToken(verifyUser.rows[0].id,token);
  
-         res.status(200).send(token);
+         res.status(200).send({ token });
      }
      catch(e){
          console.log(e)
