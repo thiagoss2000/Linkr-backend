@@ -3,7 +3,7 @@ import urlMetadata from "url-metadata";
 
 export function sendPostsTimeline() {
   return connection.query(
-    "SELECT post.text_post, post.link, post.likes FROM post ORDER BY DESC"
+    "SELECT post.text_post, post.link, post.likes FROM post ORDER BY post.id DESC LIMIT 20"
   );
 }
 
