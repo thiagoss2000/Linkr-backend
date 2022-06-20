@@ -24,4 +24,3 @@ export function postTimeline(postBody) {
   ]);
 }
 
-export function hastagTrending() {}
