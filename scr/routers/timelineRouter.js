@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { sendPostsTimeline } from "../repositories/timelineRepositories";
+import { sendPostsTimeline } from "../repositories/timelineRepositories.js";
 
 const timelineRouter = Router();
 
