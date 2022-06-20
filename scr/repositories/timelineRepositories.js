@@ -13,15 +13,15 @@ export function authUserTimeline(token) {
   ]);
 }
 
-export function postTimeline(postBody)
-{
-  const {link,text_post} = postBody
+export function postTimeline(postBody) {
+  const { link, text_post } = postBody;
 
-  const linkMetadata = await urlMetadata(`${link}`)
+  const linkMetadata = urlMetadata(`${link}`);
 
-  connection.query('INSERT INTO post (link,text_post) VALUES ($1,$2)',[linkMetadata,text_post])
+  connection.query("INSERT INTO post (link,text_post) VALUES ($1,$2)", [
+    linkMetadata,
+    text_post,
+  ]);
 }
 
-export function hastagTrending(){
-  
-}
+export function hastagTrending() {}
