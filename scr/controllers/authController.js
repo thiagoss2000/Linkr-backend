@@ -1,8 +1,15 @@
 import chalk from "chalk";
-import { newUser, searchUser, insertToken } from "../repositories/authRepository.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+
+import {
+  newUser,
+  searchUser,
+  insertToken,
+} from "../repositories/authRepository.js";
+
+
 
 dotenv.config();
 
