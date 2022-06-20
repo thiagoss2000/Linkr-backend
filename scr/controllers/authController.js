@@ -55,6 +55,7 @@ export async function login (req,res){
         await insertToken(verifyUser.rows[0].id,token);
 
         const user = {
+        id : verifyUser.rows[0].id,
         name : verifyUser.rows[0].username,
         email : verifyUser.rows[0].email,
         pictureUrl : verifyUser.rows[0].pictureUrl,
