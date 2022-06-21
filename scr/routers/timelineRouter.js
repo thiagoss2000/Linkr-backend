@@ -4,10 +4,14 @@ import { authorization } from "../middlewares/authentication.js";
 
 const timelineRouter = Router();
 
-timelineRouter.post('/post', authorization, postTimeline);
+timelineRouter.post('/post', authorization, postTimeline, teste);
 timelineRouter.get('/post', authorization, getPosts);
 timelineRouter.get('/post/:userId', authorization, getPosts);
 timelineRouter.put('/post/:postId', authorization, putTimeline);
 timelineRouter.delete('/post/:postId', authorization, deletePost);
 
 export default timelineRouter;
+
+function teste(req, res, next) {
+    console.log(res.local)
+}
