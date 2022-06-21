@@ -1,5 +1,6 @@
 import connection from "../data/dbL.js";
 import urlMetadata from "url-metadata";
+import findHashtags from "find-hashtags";
 
 export async function getPosts(req, res) {
     const id = req.params;
@@ -23,8 +24,8 @@ export async function getPosts(req, res) {
 
 export async function postTimeline(req, res, next) {
     const { title, link } = req.body;
-        const wordKeys = title.split('#');
-        const text = wordKeys.splice(0, 1);
+        const wordKeys = findHashtags(title);
+        const text = title.split('#').splice(0, 1);
     try {
         const metadata = await urlMetadata(link);
         const id = await connection.query(`INSERT INTO posts (user_id, link, title) 
