@@ -55,12 +55,11 @@ export async function getPostsId(req, res) {
 export async function postTimeline(req, res, next) {
     const { title, link } = req.body;
         const wordKeys = findHashtags(title);
-        const text = title.split('#').splice(0, 1);
     try {
         const metadata = await urlMetadata(link);
         const id = await connection.query(`INSERT INTO posts (user_id, link, title) 
             VALUES ($1, $2, $3) RETURNING id
-        `, [res.locals.rows[0].user_id, link, text[0]]);                                  
+        `, [res.locals.rows[0].user_id, link, title);                                  
         
         await connection.query(`INSERT INTO metadata (id, subject, presentation, image) 
             VALUES ($1, $2, $3, $4)
