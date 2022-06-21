@@ -27,14 +27,14 @@ export async function postTimeline(req, res, next) {
         const text = wordKeys.splice(0, 1);
     try {
         const metadata = await urlMetadata(link);
-        
         const id = await connection.query(`INSERT INTO posts (user_id, link, title) 
             VALUES ($1, $2, $3) RETURNING id
-        `, [res.locals.rows[0].user_id, link, text[0]]);                                  // validar link!!!!!!!!!!!!!!
+        `, [res.locals.rows[0].user_id, link, text[0]]);                                  
         
         await connection.query(`INSERT INTO metadata (id, subject, presentation, image) 
             VALUES ($1, $2, $3, $4)
         `, [id.rows[0].id, metadata.name, metadata.description, metadata.image]);
+       
         res.local = {
             post_id: id.rows[0].id,
             hashtags: wordKeys.map(e => e.split(' ')[0])
@@ -42,8 +42,7 @@ export async function postTimeline(req, res, next) {
         next();
         res.sendStatus(201);
     } catch (e){
-        console.log(e)
-        res.sendStatus(500);
+        res.sendStatus(422);
     }
 }
 
