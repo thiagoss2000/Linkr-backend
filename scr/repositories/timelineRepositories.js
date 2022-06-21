@@ -30,9 +30,8 @@ export async function getPosts(req, res) {
 }
 
 export async function getPostsId(req, res) {
-    const id = req.params;
+    const { userId } = req.params;
     const { page } = req.query;
-    const userId = id.userId;
 
     try {
         const metadata = await connection.query(`SELECT 
