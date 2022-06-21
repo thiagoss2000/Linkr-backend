@@ -2,7 +2,7 @@ import connection from "../data/dbL.js";
 
 export async function getLikes(req, res) {
     const { post_id } = req.query;
-    const user_id = 1
+    const user_id = res.locals.rows[0].user_id;
     try {
         const likes = await connection.query(`SELECT 
             COUNT(*) FROM likes WHERE post_id = $1
@@ -20,6 +20,30 @@ export async function getLikes(req, res) {
         `, [post_id, user_id]);
 
         res.status(200).send(likeUser.rows);
+    } catch (e){
+        console.log(e)
+        res.sendStatus(500);
+    }
+}
+
+export async function postLikes(req, res) {
+    const { post_id } = req.query;
+    const user_id = res.locals.rows[0].user_id;
+    try {
+        const likeUser = await connection.query(`SELECT 
+            * FROM likes WHERE post_id = $1 AND user_id = $2
+        `, [post_id, user_id]);
+        if (likeUser.rows.length == 0) {
+            await connection.query(`INSERT INTO likes (post_id, user_id)
+                VALUES ($1, $2)  
+            `, [post_id, user_id]);
+            res.status(201).send(true)
+        }else {
+            await connection.query(`DELETE FROM likes 
+                WHERE post_id = $1 AND user_id = $2
+            `, [post_id, user_id]);
+            res.status(200).send(false)
+        }
     } catch (e){
         console.log(e)
         res.sendStatus(500);
