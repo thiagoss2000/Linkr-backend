@@ -2,10 +2,38 @@ import connection from "../data/dbL.js";
 import urlMetadata from "url-metadata";
 import findHashtags from "find-hashtags";
 
+const limitSearch = 2;
+
 export async function getPosts(req, res) {
+    const { page } = req.query;
+    const userId = res.locals.rows[0].user_id;   
+
+    try {
+        const metadata = await connection.query(`SELECT 
+            posts.id, posts.link, posts.title, 
+            metadata.subject, metadata.presentation, metadata.image
+            FROM followers JOIN posts
+            ON followers.followers_id = posts.user_id
+            JOIN metadata
+            ON posts.id = metadata.id
+            WHERE followers.following_id = $1 AND deleted_at IS NULL
+            LIMIT ${limitSearch}
+            OFFSET ${page * limitSearch}
+        `, [userId]);
+
+
+        res.status(200).send(metadata.rows);
+    } catch (e){
+        console.log(e)
+        res.sendStatus(500);
+    }
+}
+
+export async function getPostsId(req, res) {
     const id = req.params;
-    let userId = res.locals.rows[0].user_id;
-    if(id.userId) userId = id.userId;
+    const { page } = req.query;
+    const userId = id.userId;
+
     try {
         const metadata = await connection.query(`SELECT 
             posts.id, posts.link, posts.title, 
@@ -13,6 +41,8 @@ export async function getPosts(req, res) {
             FROM posts JOIN metadata
             ON posts.id = metadata.id
             WHERE posts.user_id = $1 AND deleted_at IS NULL
+            LIMIT ${limitSearch}
+            OFFSET ${page * limitSearch}
         `, [userId]);
 
         res.status(200).send(metadata.rows);
