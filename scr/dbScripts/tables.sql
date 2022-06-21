@@ -1,26 +1,12 @@
 CREATE TABLE "users" (
-	"id" serial PRIMARY KEY,
-	"username" TEXT NOT NULL UNIQUE,
-	"email" TEXT NOT NULL UNIQUE,
-	"password" TEXT NOT NULL,
-    "pictureUrl" TEXT NOT NULL,
-    "createdAt" TIMESTAMP WITH TIME ZONE default NOW()
-);
-
-CREATE TABLE "sessions" (
-    "id" SERIAL PRIMARY KEY,
-    "userId" INTEGER NOT NULL REFERENCES "users"("id"),
-    "token" TEXT NOT NULL,
-    "createdAt" TIMESTAMP WITH TIME ZONE default NOW()
-);
-
-
-CREATE TABLE "public.users" (
 	"id" serial NOT NULL,
-	"username" TEXT NOT NULL UNIQUE,
+	"user_name" TEXT NOT NULL UNIQUE,
 	"email" TEXT NOT NULL UNIQUE,
 	"password" TEXT NOT NULL,
-	"perfil_photo" TEXT NOT NULL,
+	"image" TEXT,
+	"created_at" TIMESTAMP NOT NULL,
+	"deleted_at" TIMESTAMP,
+	"name" TEXT NOT NULL,
 	CONSTRAINT "users_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -28,22 +14,10 @@ CREATE TABLE "public.users" (
 
 
 
-CREATE TABLE "public.post" (
+CREATE TABLE "likes" (
 	"id" serial NOT NULL,
-	"user_id" bigint NOT NULL,
-	"text_post" varchar(144) NOT NULL,
-	"link" TEXT NOT NULL,
-	CONSTRAINT "post_pk" PRIMARY KEY ("id")
-) WITH (
-  OIDS=FALSE
-);
-
-
-
-CREATE TABLE "public.likes" (
-	"post_id" bigint NOT NULL,
-	"id" serial NOT NULL,
-	"user_id" bigint NOT NULL,
+	"user_id" integer NOT NULL,
+	"post_id" integer NOT NULL,
 	CONSTRAINT "likes_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -51,20 +25,27 @@ CREATE TABLE "public.likes" (
 
 
 
-CREATE TABLE "public.follwers" (
-	"user_id" bigint NOT NULL,
-	"follow_id" bigint NOT NULL
+CREATE TABLE "posts" (
+	"id" serial NOT NULL,
+	"user_id" integer NOT NULL,
+	"created_at" TIMESTAMP NOT NULL,
+	"deleted_at" TIMESTAMP,
+	"link" TEXT NOT NULL,
+	"title" TEXT,
+	"metadata_id" integer NOT NULL,
+	CONSTRAINT "posts_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
 
 
 
-CREATE TABLE "public.sessions" (
+CREATE TABLE "sessions" (
 	"id" serial NOT NULL,
-	"token" bigint NOT NULL UNIQUE,
-	"user_id" bigint NOT NULL,
-	"created_at" timestamp with time zone NOT NULL DEFAULT ' NOW()',
+	"user_id" integer NOT NULL,
+	"token" TEXT NOT NULL UNIQUE,
+	"created_at" TIMESTAMP NOT NULL,
+	"deleted_at" TIMESTAMP,
 	CONSTRAINT "sessions_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -72,21 +53,67 @@ CREATE TABLE "public.sessions" (
 
 
 
-CREATE TABLE "public.hastag" (
+CREATE TABLE "followers" (
 	"id" serial NOT NULL,
-	"hastag" TEXT NOT NULL UNIQUE,
-	CONSTRAINT "hastag_pk" PRIMARY KEY ("id")
+	"following_id" integer NOT NULL,
+	"followers_id" integer NOT NULL,
+	CONSTRAINT "followers_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
 
 
 
-CREATE TABLE "public.post_hastag" (
+CREATE TABLE "hashtags" (
 	"id" serial NOT NULL,
-	"id_hastag" bigint NOT NULL,
-	"id_post" bigint NOT NULL,
-	CONSTRAINT "post_hastag_pk" PRIMARY KEY ("id")
+	"text" TEXT NOT NULL,
+	CONSTRAINT "hashtags_pk" PRIMARY KEY ("id")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+CREATE TABLE "comments" (
+	"id" serial NOT NULL,
+	"post_id" integer NOT NULL,
+	"user_id" integer NOT NULL,
+	"text" TEXT NOT NULL,
+	CONSTRAINT "comments_pk" PRIMARY KEY ("id")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+CREATE TABLE "posts_hashtags" (
+	"id" serial NOT NULL,
+	"post_id" integer NOT NULL,
+	"hashtag_id" integer NOT NULL,
+	CONSTRAINT "posts_hashtags_pk" PRIMARY KEY ("id")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+CREATE TABLE "re_posts" (
+	"id" serial NOT NULL,
+	"user_id" integer NOT NULL,
+	"posts_id" integer NOT NULL,
+	CONSTRAINT "re_posts_pk" PRIMARY KEY ("id")
+) WITH (
+  OIDS=FALSE
+);
+
+
+
+CREATE TABLE "metadata" (
+	"id" serial NOT NULL,
+	"subject" TEXT,
+	"presentation" TEXT,
+	"image" TEXT,
+	CONSTRAINT "metadata_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
@@ -94,19 +121,31 @@ CREATE TABLE "public.post_hastag" (
 
 
 
-ALTER TABLE "post" ADD CONSTRAINT "post_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
+ALTER TABLE "likes" ADD CONSTRAINT "likes_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
+ALTER TABLE "likes" ADD CONSTRAINT "likes_fk1" FOREIGN KEY ("post_id") REFERENCES "posts"("id");
 
-ALTER TABLE "likes" ADD CONSTRAINT "likes_fk0" FOREIGN KEY ("post_id") REFERENCES "post"("id");
-ALTER TABLE "likes" ADD CONSTRAINT "likes_fk1" FOREIGN KEY ("user_id") REFERENCES "users"("id");
-
-ALTER TABLE "follwers" ADD CONSTRAINT "follwers_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
-ALTER TABLE "follwers" ADD CONSTRAINT "follwers_fk1" FOREIGN KEY ("follow_id") REFERENCES "users"("id");
+ALTER TABLE "posts" ADD CONSTRAINT "posts_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
+ALTER TABLE "posts" ADD CONSTRAINT "posts_fk1" FOREIGN KEY ("metadata_id") REFERENCES "metadata"("id");
 
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
 
+ALTER TABLE "followers" ADD CONSTRAINT "followers_fk0" FOREIGN KEY ("following_id") REFERENCES "users"("id");
+ALTER TABLE "followers" ADD CONSTRAINT "followers_fk1" FOREIGN KEY ("followers_id") REFERENCES "users"("id");
 
-ALTER TABLE "post_hastag" ADD CONSTRAINT "post_hastag_fk0" FOREIGN KEY ("id_hastag") REFERENCES "hastag"("id");
-ALTER TABLE "post_hastag" ADD CONSTRAINT "post_hastag_fk1" FOREIGN KEY ("id_post") REFERENCES "post"("id");
+
+ALTER TABLE "comments" ADD CONSTRAINT "comments_fk0" FOREIGN KEY ("post_id") REFERENCES "posts"("id");
+ALTER TABLE "comments" ADD CONSTRAINT "comments_fk1" FOREIGN KEY ("user_id") REFERENCES "users"("id");
+
+ALTER TABLE "posts_hashtags" ADD CONSTRAINT "posts_hashtags_fk0" FOREIGN KEY ("post_id") REFERENCES "posts"("id");
+ALTER TABLE "posts_hashtags" ADD CONSTRAINT "posts_hashtags_fk1" FOREIGN KEY ("hashtag_id") REFERENCES "hashtags"("id");
+
+ALTER TABLE "re_posts" ADD CONSTRAINT "re_posts_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
+ALTER TABLE "re_posts" ADD CONSTRAINT "re_posts_fk1" FOREIGN KEY ("posts_id") REFERENCES "posts"("id");
+
+
+
+
+
 
 
 

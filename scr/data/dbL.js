@@ -5,7 +5,7 @@ dotenv.config();
 const {Pool} = pg;
 
 const { user, password, host, port, database } = process.env
-const db = new Pool({
+const connection = new Pool({
   user,
   password,
   host,
@@ -13,4 +13,4 @@ const db = new Pool({
   database
 });
 
-export default db;
+export default connection;
