@@ -59,7 +59,7 @@ export async function postTimeline(req, res, next) {
         const metadata = await urlMetadata(link);
         const id = await connection.query(`INSERT INTO posts (user_id, link, title) 
             VALUES ($1, $2, $3) RETURNING id
-        `, [res.locals.rows[0].user_id, link, title);                                  
+        `, [res.locals.rows[0].user_id, link, title]);                                  
         
         await connection.query(`INSERT INTO metadata (id, subject, presentation, image) 
             VALUES ($1, $2, $3, $4)

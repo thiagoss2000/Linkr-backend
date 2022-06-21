@@ -4,7 +4,7 @@ CREATE TABLE "users" (
 	"email" TEXT NOT NULL UNIQUE,
 	"password" TEXT NOT NULL,
 	"image" TEXT,
-	"created_at" TIMESTAMP NOT NULL,
+	"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
 	"deleted_at" TIMESTAMP,
 	"name" TEXT NOT NULL,
 	CONSTRAINT "users_pk" PRIMARY KEY ("id")
@@ -28,11 +28,10 @@ CREATE TABLE "likes" (
 CREATE TABLE "posts" (
 	"id" serial NOT NULL,
 	"user_id" integer NOT NULL,
-	"created_at" TIMESTAMP NOT NULL,
+	"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
 	"deleted_at" TIMESTAMP,
 	"link" TEXT NOT NULL,
 	"title" TEXT,
-	"metadata_id" integer NOT NULL,
 	CONSTRAINT "posts_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -44,7 +43,7 @@ CREATE TABLE "sessions" (
 	"id" serial NOT NULL,
 	"user_id" integer NOT NULL,
 	"token" TEXT NOT NULL UNIQUE,
-	"created_at" TIMESTAMP NOT NULL,
+	"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
 	"deleted_at" TIMESTAMP,
 	CONSTRAINT "sessions_pk" PRIMARY KEY ("id")
 ) WITH (
@@ -109,11 +108,10 @@ CREATE TABLE "re_posts" (
 
 
 CREATE TABLE "metadata" (
-	"id" serial NOT NULL,
+	"id" integer NOT NULL,
 	"subject" TEXT,
 	"presentation" TEXT,
-	"image" TEXT,
-	CONSTRAINT "metadata_pk" PRIMARY KEY ("id")
+	"image" TEXT
 ) WITH (
   OIDS=FALSE
 );
@@ -125,7 +123,6 @@ ALTER TABLE "likes" ADD CONSTRAINT "likes_fk0" FOREIGN KEY ("user_id") REFERENCE
 ALTER TABLE "likes" ADD CONSTRAINT "likes_fk1" FOREIGN KEY ("post_id") REFERENCES "posts"("id");
 
 ALTER TABLE "posts" ADD CONSTRAINT "posts_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
-ALTER TABLE "posts" ADD CONSTRAINT "posts_fk1" FOREIGN KEY ("metadata_id") REFERENCES "metadata"("id");
 
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
 
@@ -142,14 +139,5 @@ ALTER TABLE "posts_hashtags" ADD CONSTRAINT "posts_hashtags_fk1" FOREIGN KEY ("h
 ALTER TABLE "re_posts" ADD CONSTRAINT "re_posts_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
 ALTER TABLE "re_posts" ADD CONSTRAINT "re_posts_fk1" FOREIGN KEY ("posts_id") REFERENCES "posts"("id");
 
-
-
-
-
-
-
-
-
-
-
+ALTER TABLE "metadata" ADD CONSTRAINT "metadata_fk0" FOREIGN KEY ("id") REFERENCES "posts"("id");
 
