@@ -1,7 +1,9 @@
 import connection from "../data/dbL.js";
 
+const limitSearch = 5;
+
 export async function postComments(req, res) {
-    const { post_id, text } = req.body;                 // validar text
+    const { post_id, text } = req.body;                
     const user_id = res.locals.rows[0].user_id;
     try {
         await connection.query(`INSERT INTO comments 
@@ -15,16 +17,19 @@ export async function postComments(req, res) {
 }
 
 export async function getComments(req, res) {
-    const { post_id } = req.query;                 
+    const { post_id, page } = req.query;                 
     const user_id = res.locals.rows[0].user_id;
     try {
         const comment = await connection.query(`SELECT comments.id, comments.user_id, 
-            comments.text, users.image, users.user_name, followers.followers_id as follower
+            comments.text, users.image, users.user_name, followers.followers_id 
             FROM comments
             JOIN users ON comments.user_id = users.id
             LEFT JOIN followers 
             ON followers.following_id = $2 AND followers.followers_id = comments.user_id
             WHERE comments.post_id = $1
+            ORDER BY comments.id DESC
+            LIMIT ${limitSearch}
+            OFFSET ${page * limitSearch}
         `, [post_id, user_id]);
         res.send(comment.rows)
     } catch (e){

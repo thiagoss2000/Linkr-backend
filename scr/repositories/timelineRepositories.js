@@ -2,7 +2,7 @@ import connection from "../data/dbL.js";
 import urlMetadata from "url-metadata";
 import findHashtags from "find-hashtags";
 
-const limitSearch = 2;
+const limitSearch = 10;
 
 export async function getPosts(req, res) {
     const { page } = req.query;
@@ -17,6 +17,7 @@ export async function getPosts(req, res) {
             JOIN metadata
             ON posts.id = metadata.id
             WHERE followers.following_id = $1 AND deleted_at IS NULL
+            ORDER BY posts.id DESC
             LIMIT ${limitSearch}
             OFFSET ${page * limitSearch}
         `, [userId]);
@@ -40,6 +41,7 @@ export async function getPostsId(req, res) {
             FROM posts JOIN metadata
             ON posts.id = metadata.id
             WHERE posts.user_id = $1 AND deleted_at IS NULL
+            ORDER BY posts.id DESC
             LIMIT ${limitSearch}
             OFFSET ${page * limitSearch}
         `, [userId]);

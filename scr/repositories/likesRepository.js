@@ -1,25 +1,33 @@
 import connection from "../data/dbL.js";
 
+const limitSearch = 3;
+
 export async function getLikes(req, res) {
     const { post_id } = req.query;
     const user_id = res.locals.rows[0].user_id;
     try {
-        const likes = await connection.query(`SELECT 
+        const numLikes = await connection.query(`SELECT 
             COUNT(*) FROM likes WHERE post_id = $1
         `, [post_id]);
 
-        const users = await connection.query(`SELECT 
-            followers.followers_id
-            FROM followers 
-            JOIN likes ON followers.followers_id = likes.user_id
-            WHERE followers.following_id = $2 AND likes.post_id = $1
+        const likeUser = await connection.query(`SELECT usr.user_name as user, flr.user_name as "userFollower"
+            FROM likes
+            LEFT JOIN users usr 
+            ON likes.user_id = usr.id AND $2 = usr.id
+            LEFT JOIN followers 
+            ON followers.following_id = $2 AND followers.followers_id = likes.user_id
+            LEFT JOIN users flr 
+            ON flr.id = followers.followers_id
+            WHERE likes.post_id = $1 AND (likes.user_id = usr.id OR followers.followers_id = likes.user_id)
+            LIMIT ${limitSearch}
         `, [post_id, user_id]);
 
-        const likeUser = await connection.query(`SELECT 
-            * FROM likes WHERE post_id = $1 AND user_id = $2
-        `, [post_id, user_id]);
+        const object = {
+            likeUser: likeUser.rows,
+            numLikes: numLikes.rows[0].count
+        }
 
-        res.send(likeUser.rows);
+        res.send(object);
     } catch (e){
         console.log(e)
         res.sendStatus(500);
