@@ -16,3 +16,8 @@ export const linkSchema = joi.object({
   link: joi.string().uri().required(),
   title: joi.string()
 });
+
+export const commentSchema = joi.object({
+  post_id: joi.number().integer().required(),
+  text: joi.string().required()
+});

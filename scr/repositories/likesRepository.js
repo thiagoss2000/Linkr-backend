@@ -19,7 +19,7 @@ export async function getLikes(req, res) {
             * FROM likes WHERE post_id = $1 AND user_id = $2
         `, [post_id, user_id]);
 
-        res.status(200).send(likeUser.rows);
+        res.send(likeUser.rows);
     } catch (e){
         console.log(e)
         res.sendStatus(500);
