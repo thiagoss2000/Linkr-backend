@@ -11,8 +11,8 @@ export async function validateToken (req,res,next){
     const token = authorization.replace("Bearer ", "");
     
     try{
-        const validateToken= jwt.verify(token, process.env.ENCRYPTPASSWORD);
-        res.locals.user= validateToken
+        const validatetoken= jwt.verify(token, process.env.ENCRYPTPASSWORD);
+        res.locals.user= validatetoken
 
     }catch(e){
         res.sendStatus(400);
