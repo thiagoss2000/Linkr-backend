@@ -19,6 +19,7 @@ export async function getLikes(req, res) {
             LEFT JOIN users flr 
             ON flr.id = followers.followers_id
             WHERE likes.post_id = $1 AND (likes.user_id = usr.id OR followers.followers_id = likes.user_id)
+            ORDER BY CASE WHEN usr.user_name IS NULL THEN 1 ELSE 0 END, usr.user_name
             LIMIT ${limitSearch}
         `, [post_id, user_id]);
 

@@ -7,21 +7,32 @@ const limitSearch = 10;
 export async function getPosts(req, res) {
     const { page } = req.query;
     const userId = res.locals.rows[0].user_id;   
-
+    
     try {
-        const metadata = await connection.query(`SELECT 
-            posts.id, posts.link, posts.title, 
-            metadata.subject, metadata.presentation, metadata.image
-            FROM followers JOIN posts
-            ON followers.followers_id = posts.user_id
-            JOIN metadata
-            ON posts.id = metadata.id
-            WHERE followers.following_id = $1 AND deleted_at IS NULL
-            ORDER BY posts.id DESC
+        const metadata = await connection.query(`SELECT posts.created_at,
+            posts.id, posts.user_id as creat_user, users.id as post_user, users.user_name as "post_userName", 
+            users.image as user_image, posts.link, posts.title, metadata.subject, metadata.presentation, metadata.image
+            FROM followers 
+            JOIN posts ON followers.followers_id = posts.user_id
+            JOIN metadata ON posts.id = metadata.id
+            JOIN users ON posts.user_id = users.id
+            WHERE followers.following_id = $1 AND posts.deleted_at IS NULL
+
+            UNION SELECT re_posts.created_at,
+            posts.id, posts.user_id as creat_user, post_user.id as post_user, post_user.user_name as "post_userName",
+            post_user.image as user_image, posts.link, posts.title, metadata.subject, metadata.presentation, metadata.image
+            FROM followers 
+            JOIN re_posts ON followers.followers_id = re_posts.user_id
+            LEFT JOIN users post_user ON re_posts.user_id = post_user.id
+            LEFT JOIN posts ON re_posts.posts_id = posts.id
+            LEFT JOIN metadata ON re_posts.posts_id = metadata.id
+            LEFT JOIN users creat_user ON posts.user_id = creat_user.id
+            WHERE followers.following_id = $1 AND posts.deleted_at IS NULL AND re_posts.deleted_at IS NULL
+
+            ORDER BY created_at DESC
             LIMIT ${limitSearch}
             OFFSET ${page * limitSearch}
         `, [userId]);
-
 
         res.status(200).send(metadata.rows);
     } catch (e){
@@ -35,13 +46,25 @@ export async function getPostsId(req, res) {
     const { page } = req.query;
 
     try {
-        const metadata = await connection.query(`SELECT 
-            posts.id, posts.link, posts.title, 
-            metadata.subject, metadata.presentation, metadata.image
-            FROM posts JOIN metadata
-            ON posts.id = metadata.id
-            WHERE posts.user_id = $1 AND deleted_at IS NULL
-            ORDER BY posts.id DESC
+        const metadata = await connection.query(`SELECT posts.created_at,
+            posts.id, posts.user_id as creat_user, users.id as post_user, users.user_name as "post_userName", 
+            users.image as user_image, posts.link, posts.title, metadata.subject, metadata.presentation, metadata.image
+            FROM posts 
+            JOIN metadata ON posts.id = metadata.id
+            JOIN users ON posts.user_id = users.id
+            WHERE posts.user_id = $1 AND posts.deleted_at IS NULL
+
+            UNION SELECT re_posts.created_at,
+            posts.id, posts.user_id as creat_user, post_user.id as post_user, post_user.user_name as "post_userName",
+            post_user.image as user_image, posts.link, posts.title, metadata.subject, metadata.presentation, metadata.image
+            FROM re_posts 
+            JOIN posts ON re_posts.posts_id = posts.id
+            LEFT JOIN users post_user ON re_posts.user_id = post_user.id
+            LEFT JOIN metadata ON re_posts.posts_id = metadata.id
+            LEFT JOIN users creat_user ON posts.user_id = creat_user.id
+            WHERE re_posts.user_id = $1 AND posts.deleted_at IS NULL AND re_posts.deleted_at IS NULL
+
+            ORDER BY created_at DESC
             LIMIT ${limitSearch}
             OFFSET ${page * limitSearch}
         `, [userId]);
@@ -100,7 +123,7 @@ export async function deletePost(req, res) {
         const putId = await connection.query(`UPDATE posts SET deleted_at = '${new Date().toDateString()}'
             WHERE id = $1 AND user_id = $2 RETURNING id
         `, [id.postId, res.locals.rows[0].user_id]);
-        
+
         if(putId.rows.length == 0) return res.sendStatus(404);
 
         res.sendStatus(200);

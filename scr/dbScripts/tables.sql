@@ -140,4 +140,5 @@ ALTER TABLE "re_posts" ADD CONSTRAINT "re_posts_fk0" FOREIGN KEY ("user_id") REF
 ALTER TABLE "re_posts" ADD CONSTRAINT "re_posts_fk1" FOREIGN KEY ("posts_id") REFERENCES "posts"("id");
 
 ALTER TABLE "metadata" ADD CONSTRAINT "metadata_fk0" FOREIGN KEY ("id") REFERENCES "posts"("id");
-
+ALTER TABLE re_posts ADD "created_at" TIMESTAMP NOT NULL DEFAULT NOW();
+ALTER TABLE re_posts ADD "deleted_at" TIMESTAMP;
