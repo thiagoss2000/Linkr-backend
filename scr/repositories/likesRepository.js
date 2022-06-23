@@ -4,7 +4,7 @@ const limitSearch = 3;
 
 export async function getLikes(req, res) {
     const { post_id } = req.query;
-    const user_id = res.locals.rows[0].user_id;
+    const user_id = res.locals.user.id;
     try {
         const numLikes = await connection.query(`SELECT 
             COUNT(*) FROM likes WHERE post_id = $1
@@ -37,7 +37,7 @@ export async function getLikes(req, res) {
 
 export async function postLikes(req, res) {
     const { post_id } = req.query;
-    const user_id = res.locals.rows[0].user_id;
+    const user_id = res.locals.user.id;
     try {
         const likeUser = await connection.query(`SELECT 
             * FROM likes WHERE post_id = $1 AND user_id = $2

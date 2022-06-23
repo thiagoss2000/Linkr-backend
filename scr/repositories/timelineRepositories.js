@@ -6,7 +6,7 @@ const limitSearch = 10;
 
 export async function getPosts(req, res) {
     const { page } = req.query;
-    const userId = res.locals.user_id;   
+    const userId = res.locals.user.id;   
     
     try {
         const metadata = await connection.query(`SELECT posts.created_at,
@@ -40,7 +40,6 @@ export async function getPosts(req, res) {
         }
         res.status(200).send(object);
     } catch (e){
-        console.log(e)
         res.sendStatus(500);
     }
 }
@@ -80,7 +79,6 @@ export async function getPostsId(req, res) {
 
         res.status(200).send(object);
     } catch (e){
-        console.log(e)
         res.sendStatus(500);
     }
 }
@@ -92,7 +90,7 @@ export async function postTimeline(req, res, next) {
         const metadata = await urlMetadata(link);
         const id = await connection.query(`INSERT INTO posts (user_id, link, title) 
             VALUES ($1, $2, $3) RETURNING id
-        `, [res.locals.rows[0].user_id, link, title]);                                  
+        `, [res.locals.user.id, link, title]);                                  
         
         await connection.query(`INSERT INTO metadata (id, subject, presentation, image) 
             VALUES ($1, $2, $3, $4)
@@ -115,13 +113,12 @@ export async function putTimeline(req, res) {
     try {
         const putId = await connection.query(`UPDATE posts SET title = $1
             WHERE id = $2 AND user_id = $3 RETURNING id
-        `, [title, id.postId, res.locals.rows[0].user_id]);
+        `, [title, id.postId, res.locals.user.id]);
 
         if(putId.rows.length == 0) return res.sendStatus(404);
 
         res.sendStatus(200);
     } catch (e){
-        console.log(e)
         res.sendStatus(500);
     }
 }
@@ -131,13 +128,45 @@ export async function deletePost(req, res) {
     try {
         const putId = await connection.query(`UPDATE posts SET deleted_at = '${new Date().toDateString()}'
             WHERE id = $1 AND user_id = $2 RETURNING id
-        `, [id.postId, res.locals.rows[0].user_id]);
+        `, [id.postId, res.locals.user.id]);
 
         if(putId.rows.length == 0) return res.sendStatus(404);
 
         res.sendStatus(200);
     } catch (e){
-        console.log(e)
+        res.sendStatus(500);
+    }
+}
+
+export async function rePostTimeline(req, res) {
+    const { post_id } = req.query;
+    try {
+        const validId = await connection.query(`SELECT id FROM posts WHERE id = $1 AND posts.deleted_at IS NULL
+        `, [post_id])
+        console.log(validId)
+        if(validId.rows.length == 0) return res.sendStatus(404);
+
+        const inserId = await connection.query(`INSERT INTO re_posts (posts_id, user_id)
+            VALUES ($1, $2) RETURNING id
+        `, [post_id, res.locals.user.id]);
+        if(inserId.rows.length == 0) return res.sendStatus(404);
+
+        res.sendStatus(201);
+    } catch (e){
+        res.sendStatus(500);
+    }
+}
+
+export async function deleteRePost(req, res) {
+    const { repost_id } = req.query;
+    try {
+        const putId = await connection.query(`UPDATE re_posts SET deleted_at = '${new Date().toDateString()}'
+            WHERE id = $1 AND user_id = $2 AND re_posts.deleted_at IS NULL RETURNING id
+        `, [repost_id, res.locals.user.id]);
+        if(putId.rows.length == 0) return res.sendStatus(404);
+
+        res.sendStatus(200);
+    } catch (e){
         res.sendStatus(500);
     }
 }

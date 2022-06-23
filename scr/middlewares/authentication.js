@@ -7,7 +7,7 @@ export async function authorization(req, res, next){
         const userId = await connection.query(`SELECT user_id FROM sessions
                 WHERE token = $1`, [token]);
         if (userId.rows.length == 0) return res.sendStatus(401);
-        res.locals = userId;
+        res.locals.user = { id: userId.rows[0].user_id };
         next();
     }
     catch (err) {

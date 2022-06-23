@@ -4,7 +4,7 @@ const limitSearch = 10;
 
 export async function postInfos(req, res, next) {
     const { page } = req.query;
-    const user_id = res.locals.rows[0].user_id;
+    const user_id = res.locals.user.id;
     try {
         const infos = await connection.query(`SELECT posts.created_at, posts.id as "postId", 
             COUNT(likes.*) as "numLikes", COUNT(comments.*) as "numComments", 
@@ -35,7 +35,7 @@ export async function postInfos(req, res, next) {
         `, [user_id]);
 
         res.locals = {
-            user_id,
+            user: res.locals.user,
             infos: infos.rows
         };
         next();

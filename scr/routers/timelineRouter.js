@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getPosts, postTimeline, putTimeline, deletePost, getPostsId } from "../repositories/timelineRepositories.js";
+import { getPosts, postTimeline, putTimeline, deletePost, getPostsId, rePostTimeline, deleteRePost } from "../repositories/timelineRepositories.js";
 import { postInfos, postInfosId } from "../middlewares/postsInfoMiddleware.js"; 
 import { authorization } from "../middlewares/authentication.js";
 import { validateSchema } from "../middlewares/validateSchema.js";
@@ -12,5 +12,9 @@ timelineRouter.get('/post', authorization, postInfos, getPosts);
 timelineRouter.get('/post/:userId', authorization, postInfosId, getPostsId);
 timelineRouter.put('/post/:postId', authorization, putTimeline);
 timelineRouter.delete('/post/:postId', authorization, deletePost);
+
+
+timelineRouter.post('/repost', authorization, rePostTimeline);
+timelineRouter.delete('/repost', authorization, deleteRePost);
 
 export default timelineRouter;

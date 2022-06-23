@@ -4,7 +4,7 @@ const limitSearch = 5;
 
 export async function postComments(req, res) {
     const { post_id, text } = req.body;                
-    const user_id = res.locals.rows[0].user_id;
+    const user_id = res.locals.user.id;
     try {
         await connection.query(`INSERT INTO comments 
             (post_id, user_id, text) VALUES ($1, $2, $3)  
@@ -18,7 +18,7 @@ export async function postComments(req, res) {
 
 export async function getComments(req, res) {
     const { post_id, page } = req.query;                 
-    const user_id = res.locals.rows[0].user_id;
+    const user_id = res.locals.user.id;
     try {
         const comment = await connection.query(`SELECT comments.id, comments.user_id, 
             comments.text, users.image, users.user_name, followers.followers_id 
@@ -39,7 +39,7 @@ export async function getComments(req, res) {
 
 export async function deleteComments(req, res) {
     const { comment_id } = req.query;                 
-    const user_id = res.locals.rows[0].user_id;
+    const user_id = res.locals.user.id;
     try {
         const id = await connection.query(`DELETE FROM comments
             WHERE id = $1 AND user_id = $2 RETURNING id

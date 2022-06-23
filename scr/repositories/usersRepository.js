@@ -2,7 +2,7 @@ import connection from "../data/dbL.js";
 
 export async function getUsers(req, res) {
     const { search_user } = req.query
-    const user_id = res.locals.rows[0].user_id;
+    const user_id = res.locals.user.id;
 
     try {
         if(search_user == '') return res.send([]);
