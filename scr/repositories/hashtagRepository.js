@@ -17,8 +17,18 @@ export async function createHashtag(name){
 }
 
 export async function insertPostHashtag(postId,hashtagId){
-    return await connection.query(
-        `INSERT INTO "posts_hashtags" (post_id, hashtag_id) 
+    return await connection.query(`
+        INSERT INTO "posts_hashtags" (post_id, hashtag_id) 
         VALUES ($1, $2)`, [postId, hashtagId]);
+}
+
+export async function getHastagsTrendings(){
+    return await connection.query(`
+        SELECT hashtag.text as text, COUNT("posts_hashtags".id) as trend
+        FROM hashtags
+        JOIN "posts_hashtags" ON "posts_hashtags"."hashtag_id" = hashtags.id
+        GROUP BY hashtag.text
+        ORDER BY trend DESC
+        LIMIT 10`)
 }
 

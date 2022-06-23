@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { createHashtag, insertPostHashtag } from "../repositories/hashtagRepository.js";
+import { createHashtag, insertPostHashtag, getHastagsTrendings} from "../repositories/hashtagRepository.js";
 
 export async function insertHashtags(req, res) {
     try {
@@ -7,10 +7,10 @@ export async function insertHashtags(req, res) {
         const hashtagIdArray = [];
         for (let hashtag of hashtags){
 
-            const result = await createHashtag(hashtag);
+            const response = await createHashtag(hashtag);
 
-            if (result.rows.length > 0){
-                const hashtagId = result.rows[0].id;
+            if (response.rows.length > 0){
+                const hashtagId = response.rows[0].id;
                 hashtagIdArray.push(parseInt(hashtagId));
             }
         }
@@ -37,6 +37,20 @@ export async function insertRelation(req, res){
         res.sendStatus(201);
 
     } catch(err) {
+        console.log(chalk.red(`${err}`));
+        res.status(500).send(err.message);
+    }
+}
+
+export async function getHashtags(req,res){
+    try{
+        const response = await getHastagsTrendings();
+
+        if(response.rows.length === 0) return res.status(404).send("Hashtags not found");
+
+        res.status(200).send(response.rows);
+
+    } catch (err) {
         console.log(chalk.red(`${err}`));
         res.status(500).send(err.message);
     }
