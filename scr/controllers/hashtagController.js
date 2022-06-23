@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { createHashtag } from "../repositories/hashtagController.js";
+import { createHashtag, insertPostHashtag } from "../repositories/hashtagRepository.js";
 
 export async function insertHashtags(req, res) {
     try {
@@ -17,11 +17,26 @@ export async function insertHashtags(req, res) {
         
         res.locals.hashtagsIds = hashtagIdArray;
 
-        res.status(200).send(hashtagsIds);
-
         next();
     }
     catch (err) {
+        console.log(chalk.red(`${err}`));
+        res.status(500).send(err.message);
+    }
+}
+
+export async function insertRelation(req, res){
+    try {
+        const postId = parseInt(res.locals.post_id);
+        const hashtagsIds = res.locals.hashtagsIds;
+
+        for(let hashtagId of hashtagsIds){
+            await insertPostHashtag(postId, hashtagId);
+        }
+
+        res.sendStatus(201);
+
+    } catch(err) {
         console.log(chalk.red(`${err}`));
         res.status(500).send(err.message);
     }

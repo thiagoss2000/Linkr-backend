@@ -16,3 +16,9 @@ export async function createHashtag(name){
     
 }
 
+export async function insertPostHashtag(postId,hashtagId){
+    return await connection.query(
+        `INSERT INTO "posts_hashtags" (post_id, hashtag_id) 
+        VALUES ($1, $2)`, [postId, hashtagId]);
+}
+
