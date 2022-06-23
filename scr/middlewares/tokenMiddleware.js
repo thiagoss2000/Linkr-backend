@@ -13,9 +13,8 @@ export async function validateToken (req,res,next){
     try{
         const validateToken= jwt.verify(token, process.env.ENCRYPTPASSWORD);
         res.locals.user= validateToken
-
+        next();
     }catch(e){
-        res.sendStatus(400);
+        res.sendStatus(401);
     }
-    next();
 }
