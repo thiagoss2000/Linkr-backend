@@ -9,8 +9,8 @@ export async function getPosts(req, res) {
     const userId = res.locals.user.id;   
     
     try {
-        const metadata = await connection.query(`SELECT posts.created_at,
-            posts.id, posts.user_id as creat_user, users.id as post_user, users.user_name as "post_userName", 
+        const metadata = await connection.query(`SELECT posts.created_at, posts.id, 
+            posts.user_id as creat_user, users.user_name as "creat_userName", users.id as post_user, users.user_name as "post_userName", 
             users.image as user_image, posts.link, posts.title, metadata.subject, metadata.presentation, metadata.image, likes.id as like
             FROM followers 
             JOIN posts ON followers.followers_id = posts.user_id
@@ -19,8 +19,8 @@ export async function getPosts(req, res) {
             LEFT JOIN likes ON likes.user_id = $1 AND likes.post_id = posts.id
             WHERE followers.following_id = $1 AND posts.deleted_at IS NULL
 
-            UNION SELECT re_posts.created_at,
-            posts.id, posts.user_id as creat_user, post_user.id as post_user, post_user.user_name as "post_userName",
+            UNION SELECT re_posts.created_at, posts.id, 
+            posts.user_id as creat_user, creat_user.user_name as "creat_userName", post_user.id as post_user, post_user.user_name as "post_userName",
             post_user.image as user_image, posts.link, posts.title, metadata.subject, metadata.presentation, metadata.image, likes.id as like
             FROM followers 
             JOIN re_posts ON followers.followers_id = re_posts.user_id
@@ -52,8 +52,8 @@ export async function getPostsId(req, res) {
     const userId = res.locals.user.id; 
 
     try {
-        const metadata = await connection.query(`SELECT posts.created_at,
-            posts.id, posts.user_id as creat_user, users.id as post_user, users.user_name as "post_userName", 
+        const metadata = await connection.query(`SELECT posts.created_at, posts.id, 
+            posts.user_id as creat_user, users.user_name as "creat_userName", users.id as post_user, users.user_name as "post_userName", 
             users.image as user_image, posts.link, posts.title, metadata.subject, metadata.presentation, metadata.image, likes.id as like
             FROM posts 
             JOIN metadata ON posts.id = metadata.id
@@ -61,8 +61,8 @@ export async function getPostsId(req, res) {
             LEFT JOIN likes ON likes.user_id = $2 AND likes.post_id = posts.id
             WHERE posts.user_id = $1 AND posts.deleted_at IS NULL
 
-            UNION SELECT re_posts.created_at,
-            posts.id, posts.user_id as creat_user, post_user.id as post_user, post_user.user_name as "post_userName",
+            UNION SELECT re_posts.created_at, posts.id, 
+            posts.user_id as creat_user, creat_user.user_name as "creat_userName", post_user.id as post_user, post_user.user_name as "post_userName",
             post_user.image as user_image, posts.link, posts.title, metadata.subject, metadata.presentation, metadata.image, likes.id as like
             FROM re_posts 
             JOIN posts ON re_posts.posts_id = posts.id
