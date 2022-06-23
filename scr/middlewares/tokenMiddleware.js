@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config()
 
-export const verifyJWT = (req, res, next) => {
+export const validateToken = (req, res, next) => {
     try {
         let token = req.headers.authorization;
         if (!token) return res.status(401).send({ error: "No token provided" });

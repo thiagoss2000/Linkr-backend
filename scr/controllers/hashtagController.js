@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { createHashtag, insertPostHashtag, getHastagsTrendings} from "../repositories/hashtagRepository.js";
 
-export async function insertHashtags(req, res) {
+export async function insertHashtags(req, res, next) {
     try {
         const hashtags = res.locals.hashtags
         const hashtagIdArray = [];
