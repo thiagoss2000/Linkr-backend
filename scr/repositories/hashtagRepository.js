@@ -1,9 +1,9 @@
 import connection from "../data/db.js";
 
-export async function createHashtag(name){
+export async function createHashtag(text){
     return await connection.query(`
         WITH hashtag AS (
-            INSERT INTO hashtags (name) 
+            INSERT INTO hashtags (text) 
             VALUES ($1)
             ON CONFLICT (name) DO NOTHING
             RETURNING hashtags.id
@@ -11,8 +11,8 @@ export async function createHashtag(name){
 
         SELECT * FROM hashtag
         UNION
-        SELECT id FROM hashtags WHERE name = $1
-        `, [name])
+        SELECT id FROM hashtags WHERE text = $1
+        `, [text])
     
 }
 
