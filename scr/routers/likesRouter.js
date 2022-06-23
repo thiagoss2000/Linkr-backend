@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { getLikes, postLikes } from "../repositories/likesRepository.js";
-import { authorization } from "../middlewares/authentication.js";
+import { validateToken } from "../middlewares/tokenMiddleware.js";
 
 const likesRouter = Router();
 
-likesRouter.post('/like',authorization, postLikes);
-likesRouter.get('/like', authorization, getLikes);
+likesRouter.post('/like',validateToken, postLikes);
+likesRouter.get('/like', validateToken, getLikes);
 
 export default likesRouter;

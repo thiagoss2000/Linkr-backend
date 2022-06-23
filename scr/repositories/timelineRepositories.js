@@ -1,4 +1,4 @@
-import connection from "../data/dbL.js";
+import connection from "../data/db.js";
 import urlMetadata from "url-metadata";
 import findHashtags from "find-hashtags";
 
@@ -146,10 +146,10 @@ export async function rePostTimeline(req, res) {
         console.log(validId)
         if(validId.rows.length == 0) return res.sendStatus(404);
 
-        const inserId = await connection.query(`INSERT INTO re_posts (posts_id, user_id)
+        const insertId = await connection.query(`INSERT INTO re_posts (posts_id, user_id)
             VALUES ($1, $2) RETURNING id
         `, [post_id, res.locals.user.id]);
-        if(inserId.rows.length == 0) return res.sendStatus(404);
+        if(insertId.rows.length == 0) return res.sendStatus(404);
 
         res.sendStatus(201);
     } catch (e){

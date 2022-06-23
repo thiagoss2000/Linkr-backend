@@ -1,4 +1,4 @@
-import connection from "../data/dbL.js";
+import connection from "../data/db.js";
 
 const limitSearch = 10;
 

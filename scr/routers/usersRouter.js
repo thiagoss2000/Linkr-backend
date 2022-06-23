@@ -1,10 +1,9 @@
 import { Router } from "express";
-
 import { getUsers } from "../repositories/usersRepository.js";
-import { authorization } from "../middlewares/authentication.js";
+import { validateToken } from "../middlewares/tokenMiddleware.js";
 
 const usersRouter = Router();
 
-usersRouter.get('/users', authorization, getUsers);
+usersRouter.get('/users', validateToken, getUsers);
 
 export default usersRouter;

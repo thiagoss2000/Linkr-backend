@@ -1,4 +1,4 @@
-import connection from "../data/dbL.js";
+import connection from "../data/db.js";
 
 export async function getUsers(req, res) {
     const { search_user } = req.query
