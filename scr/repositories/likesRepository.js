@@ -42,6 +42,8 @@ export async function postLikes(req, res) {
         const likeUser = await connection.query(`SELECT 
             * FROM likes WHERE post_id = $1 AND user_id = $2
         `, [post_id, user_id]);
+        console.log(likeUser)
+
         if (likeUser.rows.length == 0) {
             await connection.query(`INSERT INTO likes (post_id, user_id)
                 VALUES ($1, $2)  

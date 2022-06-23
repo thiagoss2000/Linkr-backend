@@ -17,7 +17,7 @@ export async function postInfos(req, res, next) {
             WHERE followers.following_id = $1 AND posts.deleted_at IS NULL
             GROUP BY "postId"
 
-            UNION SELECT repost.created_at, repost.posts_id as "postIds", 
+            UNION SELECT repost.created_at, repost.posts_id as "postId", 
             COUNT(likes.*) as "numLikes", COUNT(comments.*) as "numComments", 
             COUNT(re_posts.*) as "numRe_posts" 
             FROM followers 
@@ -26,7 +26,7 @@ export async function postInfos(req, res, next) {
             LEFT JOIN likes ON repost.posts_id = likes.post_id
             LEFT JOIN comments ON repost.posts_id = comments.post_id
             LEFT JOIN re_posts ON repost.posts_id = re_posts.posts_id
-            WHERE followers.following_id = $1 AND posts.deleted_at IS NULL AND re_posts.deleted_at IS NULL
+            WHERE followers.following_id = $1 AND posts.deleted_at IS NULL AND repost.deleted_at IS NULL
             GROUP BY repost.id
 
             ORDER BY created_at DESC
@@ -59,7 +59,7 @@ export async function postInfosId(req, res, next) {
             WHERE posts.user_id = $1 AND posts.deleted_at IS NULL
             GROUP BY "postId"
 
-            UNION SELECT repost.created_at, repost.posts_id as "postIds", 
+            UNION SELECT repost.created_at, repost.posts_id as "postId", 
             COUNT(likes.*) as "numLikes", COUNT(comments.*) as "numComments", 
             COUNT(re_posts.*) as "numRe_posts" 
             FROM re_posts repost
@@ -67,7 +67,7 @@ export async function postInfosId(req, res, next) {
             LEFT JOIN likes ON repost.posts_id = likes.post_id
             LEFT JOIN comments ON repost.posts_id = comments.post_id
             LEFT JOIN re_posts ON repost.posts_id = re_posts.posts_id
-            WHERE repost.user_id = $1 AND posts.deleted_at IS NULL AND re_posts.deleted_at IS NULL
+            WHERE repost.user_id = $1 AND posts.deleted_at IS NULL AND repost.deleted_at IS NULL
             GROUP BY repost.id
 
             ORDER BY created_at DESC
@@ -76,6 +76,7 @@ export async function postInfosId(req, res, next) {
         `, [userId]);
 
         res.locals = {
+            user: res.locals.user,
             infos: infos.rows
         };
         next();
