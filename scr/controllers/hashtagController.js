@@ -1,13 +1,25 @@
 import chalk from "chalk";
+import { createHashtag } from "../repositories/hashtagController.js";
 
-export async function getHashtagPosts(req, res) {
-    const { hashtag } = req.params;
+export async function insertHashtags(req, res) {
     try {
-        const hashtagPosts = await getHashtagPosts(hashtag);
+        const hashtags = res.locals.hashtags
+        const hashtagIdArray = [];
+        for (let hashtag of hashtags){
 
-        if(hashtagPosts.rows.length === 0) return res.status(404).send({message: "Hashtag not found"});
+            const result = await createHashtag(hashtag);
 
-        res.status(200).send(hashtagPosts);
+            if (result.rows.length > 0){
+                const hashtagId = result.rows[0].id;
+                hashtagIdArray.push(parseInt(hashtagId));
+            }
+        }
+        
+        res.locals.hashtagsIds = hashtagIdArray;
+
+        res.status(200).send(hashtagsIds);
+
+        next();
     }
     catch (err) {
         console.log(chalk.red(`${err}`));

@@ -1,4 +1,5 @@
 import { searchUser } from "../repositories/usersRepository.js";
+import usersRouter from "../routers/usersRouter.js";
 
 export async function search(req, res) {
     const { user } = req.params;

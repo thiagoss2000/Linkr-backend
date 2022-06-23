@@ -56,12 +56,11 @@ export async function login (req,res){
 
         const user = {
         id : verifyUser.rows[0].id,
-        name : verifyUser.rows[0].username,
-        email : verifyUser.rows[0].email,
-        pictureUrl : verifyUser.rows[0].pictureUrl,
+        username : verifyUser.rows[0].username,
+        pictureUrl : verifyUser.rows[0].pictureUrl
         }
 
-        const response = { token: token, user: user };
+        const response = { token, user };
 
         res.status(200).send({ message: "Login successful", ...response });
     }
