@@ -6,7 +6,7 @@ const limitSearch = 10;
 
 export async function getPosts(req, res) {
     const { page } = req.query;
-    const userId = res.locals.rows[0].user_id;   
+    const userId = res.locals.user_id;   
     
     try {
         const metadata = await connection.query(`SELECT posts.created_at,
@@ -34,7 +34,11 @@ export async function getPosts(req, res) {
             OFFSET ${page * limitSearch}
         `, [userId]);
 
-        res.status(200).send(metadata.rows);
+        const object = {
+            posts: metadata.rows,
+            infos: res.locals.infos
+        }
+        res.status(200).send(object);
     } catch (e){
         console.log(e)
         res.sendStatus(500);
@@ -69,7 +73,12 @@ export async function getPostsId(req, res) {
             OFFSET ${page * limitSearch}
         `, [userId]);
 
-        res.status(200).send(metadata.rows);
+        const object = {
+            posts: metadata.rows,
+            infos: res.locals.infos
+        }
+
+        res.status(200).send(object);
     } catch (e){
         console.log(e)
         res.sendStatus(500);
