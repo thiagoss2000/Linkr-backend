@@ -103,7 +103,7 @@ export async function postTimeline(req, res, next) {
        
         res.local = {
             post_id: id.rows[0].id,
-            hashtags: wordKeys.map(e => e.split(' ')[0])
+            hashtags: wordKeys
         }
         next();
         res.sendStatus(201);
@@ -115,13 +115,18 @@ export async function postTimeline(req, res, next) {
 export async function putTimeline(req, res) {
     const id = req.params;
     const { title } = req.body;
+    const wordKeys = findHashtags(title);
     try {
         const putId = await connection.query(`UPDATE posts SET title = $1
             WHERE id = $2 AND user_id = $3 RETURNING id
         `, [title, id.postId, res.locals.user.id]);
 
         if(putId.rows.length == 0) return res.sendStatus(404);
-
+        res.local = {
+            post_id: putId.rows[0].id,
+            hashtags: wordKeys
+        }
+        next();
         res.sendStatus(200);
     } catch (e){
         res.sendStatus(500);
