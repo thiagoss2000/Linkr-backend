@@ -22,6 +22,13 @@ export async function insertPostHashtag(postId,hashtagId){
         VALUES ($1, $2)`, [postId, hashtagId]);
 }
 
+export async function deletePostHastag(postId){
+    return await connection.query(`
+        DELETE FROM "posts_hashtags"
+        WHERE post_id = $1
+        RETURNING post_id`, [postId])
+}
+
 export async function getHastagsTrendings(){
     return await connection.query(`
         SELECT hashtag.text as text, COUNT("posts_hashtags".id) as trend

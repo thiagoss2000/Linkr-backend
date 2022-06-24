@@ -1,5 +1,9 @@
 import chalk from "chalk";
-import { createHashtag, insertPostHashtag, getHastagsTrendings} from "../repositories/hashtagRepository.js";
+import { createHashtag, 
+        insertPostHashtag, 
+        getHastagsTrendings,
+        deletePostHastag
+        } from "../repositories/hashtagRepository.js";
 
 export async function insertHashtags(req, res, next) {
     try {
@@ -20,6 +24,23 @@ export async function insertHashtags(req, res, next) {
         next();
     }
     catch (err) {
+        console.log(chalk.red(`${err}`));
+        res.status(500).send(err.message);
+    }
+}
+
+export async function deleteRelation(req,res,next){
+    try{
+        const postId = res.locals.post_id
+        const result = await deletePostHastag(postId)
+    
+        res.locals = {
+            post_id: result.rows[0].post_id
+        }
+        
+        next();
+
+    } catch(err) {
         console.log(chalk.red(`${err}`));
         res.status(500).send(err.message);
     }

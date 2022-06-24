@@ -34,7 +34,6 @@ export async function login (req,res){
         const {email,password} = req.body;
 
         const verifyUser = await searchUser(email);
-        console.table(verifyUser.rows)
 
         if(verifyUser.rows.length === 0){
             res.status(401).send({message: "User not found..."});
@@ -62,7 +61,7 @@ export async function login (req,res){
 
         const response = { token, user };
 
-        res.status(200).send({ message: "Login successful", ...response });
+        res.status(200).send({...response });
     }
     catch(e){
         console.log(e);

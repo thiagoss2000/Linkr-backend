@@ -106,13 +106,12 @@ export async function postTimeline(req, res, next) {
             hashtags: wordKeys
         }
         next();
-        res.sendStatus(201);
     } catch (e){
         res.sendStatus(422);
     }
 }
 
-export async function putTimeline(req, res) {
+export async function putTimeline(req, res, next) {
     const id = req.params;
     const { title } = req.body;
     const wordKeys = findHashtags(title);
@@ -127,7 +126,6 @@ export async function putTimeline(req, res) {
             hashtags: wordKeys
         }
         next();
-        res.sendStatus(200);
     } catch (e){
         res.sendStatus(500);
     }
