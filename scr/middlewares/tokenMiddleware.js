@@ -1,20 +1,22 @@
-import dotenv from "dotenv";
+import chalk from "chalk";
 import jwt from "jsonwebtoken";
+import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config()
 
-export async function validateToken (req,res,next){
-    const { authorization } = req.headers;
-
-    if (!authorization) return res.status(401).send("Token not provided");
-
-    const token = authorization.replace("Bearer ", "");
-    
-    try{
-        const validateToken= jwt.verify(token, process.env.ENCRYPTPASSWORD);
-        res.locals.user= validateToken
+export const validateToken = (req, res, next) => {
+    try {
+        let token = req.headers.authorization;
+        if (!token) return res.status(401).send({ error: "No token provided" });
+        token = token.replace("Bearer ", "");
+        
+        const decoded = jwt.verify(token, process.env.ENCRYPTPASSWORD);
+        if (!decoded) return res.status(401).send({ error: "Invalid token" });
+        res.locals.user = decoded;
+        
         next();
-    }catch(e){
-        res.sendStatus(401);
+    } catch (err) {
+        console.log(chalk.red(`ERROR VERIFYING JWT: ${err}`));
+        return res.status(401).send({message: "Auth failed" });
     }
 }

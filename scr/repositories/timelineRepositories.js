@@ -101,18 +101,19 @@ export async function postTimeline(req, res, next) {
             VALUES ($1, $2, $3, $4)
         `, [id.rows[0].id, metadata.name, metadata.description, metadata.image]);
        
-        res.local = {
+        res.locals = {
             post_id: id.rows[0].id,
             hashtags: wordKeys
         }
+
         next();
-        res.sendStatus(201);
     } catch (e){
+        console.log('timeline post error:'+ e.message)
         res.sendStatus(422);
     }
 }
 
-export async function putTimeline(req, res) {
+export async function putTimeline(req, res, next) {
     const id = req.params;
     const { title } = req.body;
     const wordKeys = findHashtags(title);
@@ -122,12 +123,11 @@ export async function putTimeline(req, res) {
         `, [title, id.postId, res.locals.user.id]);
 
         if(putId.rows.length == 0) return res.sendStatus(404);
-        res.local = {
+        res.locals = {
             post_id: putId.rows[0].id,
             hashtags: wordKeys
         }
         next();
-        res.sendStatus(200);
     } catch (e){
         res.sendStatus(500);
     }

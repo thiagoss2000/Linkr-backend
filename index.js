@@ -3,10 +3,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import chalk from "chalk";
 
-import helloWorld from "./scr/routers/helloAPI.js";
 import authRouter from "./scr/routers/authRouter.js";
 import usersRouter from "./scr/routers/usersRouter.js";
 import timelineRouter from "./scr/routers/timelineRouter.js";
+import hashtagRouter from "./scr/routers/hashtagRouter.js";
 import likesRouter from "./scr/routers/likesRouter.js";
 import commentsRouter from "./scr/routers/commentsRouter.js";
 
@@ -16,10 +16,10 @@ const app = express();
 app.use(json());
 app.use(cors());
 
-app.use(helloWorld);
 app.use(authRouter);
 app.use(usersRouter);
 app.use(timelineRouter);
+app.use(hashtagRouter);
 app.use(likesRouter)
 app.use(commentsRouter)
 
