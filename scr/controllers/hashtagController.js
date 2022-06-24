@@ -8,6 +8,8 @@ import { createHashtag,
 export async function insertHashtags(req, res, next) {
     try {
         const hashtags = res.locals.hashtags
+
+        if(hashtags.length === 0)  return res.status(200).send('not exits hashtags')
         const hashtagIdArray = [];
         for (let hashtag of hashtags){
 
@@ -20,7 +22,7 @@ export async function insertHashtags(req, res, next) {
         }
         
         res.locals.hashtagsIds = hashtagIdArray;
-
+        console.log(hashtagIdArray)
         next();
     }
     catch (err) {
@@ -31,13 +33,16 @@ export async function insertHashtags(req, res, next) {
 
 export async function deleteRelation(req,res,next){
     try{
+        
         const postId = res.locals.post_id
+        const hashtagIdArray = res.locals.hashtagsIds
         const result = await deletePostHastag(postId)
     
         res.locals = {
-            post_id: result.rows[0].post_id
+            post_id: result.rows[0].post_id,
+            hashtagsIds : hashtagIdArray
         }
-        
+        console.log(res.locals)
         next();
 
     } catch(err) {

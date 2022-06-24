@@ -5,7 +5,7 @@ export async function createHashtag(text){
         WITH hashtag AS (
             INSERT INTO hashtags (text) 
             VALUES ($1)
-            ON CONFLICT (name) DO NOTHING
+            ON CONFLICT (text) DO NOTHING
             RETURNING hashtags.id
         )
 
@@ -31,10 +31,10 @@ export async function deletePostHastag(postId){
 
 export async function getHastagsTrendings(){
     return await connection.query(`
-        SELECT hashtag.text as text, COUNT("posts_hashtags".id) as trend
+        SELECT hashtags.text as text, COUNT("posts_hashtags".id) as trend
         FROM hashtags
         JOIN "posts_hashtags" ON "posts_hashtags"."hashtag_id" = hashtags.id
-        GROUP BY hashtag.text
+        GROUP BY hashtags.text
         ORDER BY trend DESC
         LIMIT 10`)
 }

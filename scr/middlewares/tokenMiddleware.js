@@ -13,8 +13,7 @@ export const validateToken = (req, res, next) => {
         const decoded = jwt.verify(token, process.env.ENCRYPTPASSWORD);
         if (!decoded) return res.status(401).send({ error: "Invalid token" });
         res.locals.user = decoded;
-        console.log(decoded)
-        console.log(res.locals.user)
+        
         next();
     } catch (err) {
         console.log(chalk.red(`ERROR VERIFYING JWT: ${err}`));
