@@ -14,10 +14,10 @@ import {
 dotenv.config();
 
 export async function signUp(req, res) {
-    const { email, password, username, urlpicture} = req.body;
+    const { email, password, user_name, image} = req.body;
     const hashPassword= bcrypt.hashSync(password,10);
     try{
-        await newUser(username, email, hashPassword, urlpicture);
+        await newUser(user_name, email, hashPassword, image);
         res.status(201).send({message: "User created successfully"});
     } catch(err){
         console.log(chalk.red(`${err}`));

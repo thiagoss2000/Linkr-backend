@@ -6,7 +6,6 @@ CREATE TABLE "users" (
 	"image" TEXT,
 	"created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
 	"deleted_at" TIMESTAMP,
-	"name" TEXT NOT NULL,
 	CONSTRAINT "users_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
