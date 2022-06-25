@@ -72,8 +72,6 @@ export async function getHashtags(req,res){
     try{
         const response = await getHastagsTrendings();
 
-        if(response.rows.length === 0) return res.status(404).send("Hashtags not found");
-
         res.status(200).send(response.rows);
 
     } catch (err) {

@@ -34,7 +34,7 @@ export async function login (req,res){
         const {email,password} = req.body;
 
         const verifyUser = await searchUser(email);
-
+        console.log()
         if(verifyUser.rows.length === 0){
             res.status(401).send({message: "User not found..."});
             return;
@@ -55,8 +55,8 @@ export async function login (req,res){
 
         const user = {
         id : verifyUser.rows[0].id,
-        username : verifyUser.rows[0].username,
-        pictureUrl : verifyUser.rows[0].pictureUrl
+        user_name : verifyUser.rows[0].user_name,
+        image : verifyUser.rows[0].image
         }
 
         const response = { token, user };
