@@ -6,8 +6,8 @@ import { commentSchema } from "../schemas/authSchema.js";
 
 const commentsRouter = Router();
 
-commentsRouter.post('/comment', authorization, postComments);
-commentsRouter.get('/comment', authorization, validateSchema(commentSchema), getComments);
+commentsRouter.post('/comment', authorization, validateSchema(commentSchema), postComments);
+commentsRouter.get('/comment', authorization, getComments);
 commentsRouter.delete('/comment', authorization, deleteComments);
 
 export default commentsRouter;

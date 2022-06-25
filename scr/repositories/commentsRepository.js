@@ -1,6 +1,6 @@
 import connection from "../data/dbL.js";
 
-const limitSearch = 5;
+const limitSearch = 3;
 
 export async function postComments(req, res) {
     const { post_id, text } = req.body;                
@@ -17,7 +17,7 @@ export async function postComments(req, res) {
 }
 
 export async function getComments(req, res) {
-    const { post_id, page } = req.query;                 
+    const { post_id, page } = req.query;  
     const user_id = res.locals.user.id;
     try {
         const comment = await connection.query(`SELECT comments.id, comments.user_id, 

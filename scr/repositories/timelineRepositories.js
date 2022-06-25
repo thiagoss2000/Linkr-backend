@@ -171,11 +171,52 @@ export async function deleteRePost(req, res) {
     const { repost_id } = req.query;
     try {
         const putId = await connection.query(`UPDATE re_posts SET deleted_at = '${new Date().toDateString()}'
-            WHERE id = $1 AND user_id = $2 AND re_posts.deleted_at IS NULL RETURNING id
+            WHERE posts_id = $1 AND user_id = $2 AND re_posts.deleted_at IS NULL RETURNING id
         `, [repost_id, res.locals.user.id]);
         if(putId.rows.length == 0) return res.sendStatus(404);
 
         res.sendStatus(200);
+    } catch (e){
+        res.sendStatus(500);
+    }
+}
+
+export async function getNewPostsId(req, res) {
+    const user_id = req.params.userId
+    const { date } = req.query;
+    try {
+        const numPosts = await connection.query(`
+            SELECT COUNT(*) FROM posts
+            WHERE deleted_at IS NULL AND created_at > $1 AND user_id = $2
+
+            UNION SELECT COUNT(*) FROM re_posts
+            WHERE deleted_at IS NULL AND created_at > $1 AND user_id = $2
+        `, [date, user_id]);
+
+        res.send(numPosts.rows);
+    } catch (e){
+        res.sendStatus(500);
+    }
+}
+
+export async function getNewPosts(req, res) {
+    const user_id = res.locals.user.id
+    const { date } = req.query;
+    console.log(new Date(date).getUTCDate())
+    try {
+        const numPosts = await connection.query(`
+            SELECT COUNT(posts.*) 
+            FROM followers
+            JOIN posts ON posts.user_id = followers.followers_id
+            WHERE posts.deleted_at IS NULL AND posts.created_at > $1 AND followers.following_id = $2
+
+            UNION SELECT COUNT(re_posts.*) 
+            FROM followers
+            JOIN re_posts ON re_posts.user_id = followers.followers_id
+            WHERE re_posts.deleted_at IS NULL AND re_posts.created_at > $1 AND followers.following_id = $2
+        `, [date, user_id]);
+        console.log(numPosts.rows)
+        res.send(numPosts.rows);
     } catch (e){
         res.sendStatus(500);
     }
